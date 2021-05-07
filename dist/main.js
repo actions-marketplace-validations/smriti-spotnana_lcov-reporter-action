@@ -2,10 +2,11 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var path = require('path');
+var path__default = _interopDefault(path);
 var fs = require('fs');
 var fs__default = _interopDefault(fs);
 var os = _interopDefault(require('os'));
-var path = _interopDefault(require('path'));
 var child_process = _interopDefault(require('child_process'));
 var Stream = _interopDefault(require('stream'));
 var assert = _interopDefault(require('assert'));
@@ -157,7 +158,7 @@ exports.setSecret = setSecret;
  */
 function addPath(inputPath) {
     command.issueCommand('add-path', {}, inputPath);
-    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
+    process.env['PATH'] = `${inputPath}${path__default.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
 /**
@@ -622,7 +623,7 @@ function which (cmd, opt, cb) {
     if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"')
       pathPart = pathPart.slice(1, -1);
 
-    var p = path.join(pathPart, cmd);
+    var p = path__default.join(pathPart, cmd);
     if (!pathPart && (/^\.[\\\/]/).test(cmd)) {
       p = cmd.slice(0, 2) + p;
     }
@@ -656,7 +657,7 @@ function whichSync (cmd, opt) {
     if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"')
       pathPart = pathPart.slice(1, -1);
 
-    var p = path.join(pathPart, cmd);
+    var p = path__default.join(pathPart, cmd);
     if (!pathPart && /^\.[\\\/]/.test(cmd)) {
       p = cmd.slice(0, 2) + p;
     }
@@ -718,7 +719,7 @@ function resolveCommandAttempt(parsed, withoutPathExt) {
     try {
         resolved = which_1.sync(parsed.command, {
             path: (parsed.options.env || process.env)[pathKey$1],
-            pathExt: withoutPathExt ? path.delimiter : undefined,
+            pathExt: withoutPathExt ? path__default.delimiter : undefined,
         });
     } catch (e) {
         /* Empty */
@@ -729,7 +730,7 @@ function resolveCommandAttempt(parsed, withoutPathExt) {
     // If we successfully resolved, ensure that an absolute path is returned
     // Note that when a custom `cwd` was used, we need to resolve to an absolute path based on it
     if (resolved) {
-        resolved = path.resolve(hasCustomCwd ? parsed.options.cwd : '', resolved);
+        resolved = path__default.resolve(hasCustomCwd ? parsed.options.cwd : '', resolved);
     }
 
     return resolved;
@@ -2407,7 +2408,7 @@ function parseNonShell(parsed) {
 
         // Normalize posix paths into OS compatible paths (e.g.: foo/bar -> foo\bar)
         // This is necessary otherwise it will always fail with ENOENT in those cases
-        parsed.command = path.normalize(parsed.command);
+        parsed.command = path__default.normalize(parsed.command);
 
         // Escape command & arguments
         parsed.command = _escape.command(parsed.command);
@@ -2602,19 +2603,19 @@ module.exports = opts => {
 	}, opts);
 
 	let prev;
-	let pth = path.resolve(opts.cwd);
+	let pth = path__default.resolve(opts.cwd);
 	const ret = [];
 
 	while (prev !== pth) {
-		ret.push(path.join(pth, 'node_modules/.bin'));
+		ret.push(path__default.join(pth, 'node_modules/.bin'));
 		prev = pth;
-		pth = path.resolve(pth, '..');
+		pth = path__default.resolve(pth, '..');
 	}
 
 	// ensure the running `node` binary is used
-	ret.push(path.dirname(process.execPath));
+	ret.push(path__default.dirname(process.execPath));
 
-	return ret.concat(opts.path).join(path.delimiter);
+	return ret.concat(opts.path).join(path__default.delimiter);
 };
 
 module.exports.env = opts => {
@@ -3387,7 +3388,7 @@ function handleArgs(cmd, args, opts) {
 		opts.cleanup = false;
 	}
 
-	if (process.platform === 'win32' && path.basename(parsed.command) === 'cmd.exe') {
+	if (process.platform === 'win32' && path__default.basename(parsed.command) === 'cmd.exe') {
 		// #116
 		parsed.args.unshift('/q');
 	}
@@ -22617,7 +22618,7 @@ http://yuilibrary.com/license/
 
 
 /* istanbul ignore next */
-var exists = fs__default.exists || path.exists;
+var exists = fs__default.exists || path__default.exists;
 
 var walkFile = function(str, cb) {
     var data = [], item;
@@ -22796,8 +22797,8 @@ function tabulate(lcov, options) {
 		th("Stmts"),
 		th("Branches"),
 		th("Funcs"),
-		th("Lines"),
-		th("Uncovered Lines"),
+		// th("Lines"),
+		// th("Uncovered Lines"),
 	);
 
 	const folders = {};
@@ -22814,7 +22815,7 @@ function tabulate(lcov, options) {
 			(acc, key) => [
 				...acc,
 				toFolder(key),
-				...folders[key].map(file => toRow(file, key !== "", options)),
+				...folders[key].map((file) => toRow(file, key !== "", options)),
 			],
 			[],
 		);
@@ -22833,16 +22834,19 @@ function toFolder(path) {
 function getStatement(file) {
 	const { branches, functions, lines } = file;
 
-	return [branches, functions, lines].reduce(function(acc, curr) {
-		if (!curr) {
-			return acc
-		}
+	return [branches, functions, lines].reduce(
+		function (acc, curr) {
+			if (!curr) {
+				return acc
+			}
 
-		return {
-			hit: acc.hit + curr.hit,
-			found: acc.found + curr.found,
-		}
-	}, { hit: 0, found: 0 })
+			return {
+				hit: acc.hit + curr.hit,
+				found: acc.found + curr.found,
+			}
+		},
+		{ hit: 0, found: 0 },
+	)
 }
 
 function toRow(file, indent, options) {
@@ -22851,8 +22855,8 @@ function toRow(file, indent, options) {
 		td(percentage$1(getStatement(file))),
 		td(percentage$1(file.branches)),
 		td(percentage$1(file.functions)),
-		td(percentage$1(file.lines)),
-		td(uncovered(file, options)),
+		// td(percentage(file.lines, options)),
+		// td(uncovered(file, options)),
 	)
 }
 
@@ -22876,57 +22880,6 @@ function percentage$1(item) {
 	const tag = value === 100 ? fragment : b;
 
 	return tag(`${rounded}%`)
-}
-
-function uncovered(file, options) {
-	const branches = (file.branches ? file.branches.details : [])
-		.filter(branch => branch.taken === 0)
-		.map(branch => branch.line);
-
-	const lines = (file.lines ? file.lines.details : [])
-		.filter(line => line.hit === 0)
-		.map(line => line.line);
-
-	const all = ranges([...branches, ...lines]);
-
-
-	return all
-		.map(function(range) {
-			const fragment = range.start === range.end ? `L${range.start}` : `L${range.start}-L${range.end}`;
-			const relative = file.file.replace(options.prefix, "");
-			const href = `https://github.com/${options.repository}/blob/${options.commit}/${relative}#${fragment}`;
-			const text = range.start === range.end ? range.start : `${range.start}&ndash;${range.end}`;
-
-			return a({ href }, text)
-		})
-		.join(", ")
-}
-
-function ranges(linenos) {
-	const res = [];
-
-	let last = null;
-
-	linenos.sort().forEach(function(lineno) {
-		if (last === null) {
-			last = { start: lineno, end: lineno };
-			return
-		}
-
-		if (last.end + 1 === lineno) {
-			last.end = lineno;
-			return
-		}
-
-		res.push(last);
-		last = { start: lineno, end: lineno };
-	});
-
-	if (last) {
-		res.push(last);
-	}
-
-	return res
 }
 
 function comment (lcov, options) {
@@ -22971,56 +22924,89 @@ function diff(lcov, before, options) {
 
 async function main$1() {
 	const token = core$1.getInput("github-token");
-	const lcovFile = core$1.getInput("lcov-file") || "./coverage/lcov.info";
-	const baseFile = core$1.getInput("lcov-base");
+	let workingDirectory = core$1.getInput("working-directory", { required: false });
+	let cwd = workingDirectory ? path.resolve(workingDirectory) : "src/react";
+	// : process.cwd()
+	// const cwd = process.env.BRANCH
+	// console.log vs console.debug
+	console.debug(cwd, "working-directory ...");
 
-	const raw = await fs.promises.readFile(lcovFile, "utf-8").catch(err => null);
-	if (!raw) {
-		console.log(`No coverage report found at '${lcovFile}', exiting...`);
-		return
-	}
+	const CWD = cwd + path.sep;
 
-	const baseRaw = baseFile && await fs.promises.readFile(baseFile, "utf-8").catch(err => null);
-	if (baseFile && !baseRaw) {
-		console.log(`No coverage report found at '${baseFile}', ignoring...`);
-	}
+	// bcoz lcov file parse and tabulating is failing ..
+	const lcovFiles = core$1
+		.getInput("reports-array")
+		.split(" ")
+		.filter((x) => x !== "");
 
-	const options = {
-		repository: github_1.payload.repository.full_name,
-		prefix: `${process.env.GITHUB_WORKSPACE}/`,
-	};
+	// we shud not need to get from user
+	const baseFiles = core$1
+		.getInput("base-reports-array")
+		.split(" ")
+		.filter((x) => x !== "");
 
-	if (github_1.eventName === "pull_request") {
-		options.commit = github_1.payload.pull_request.head.sha;
-		options.head = github_1.payload.pull_request.head.ref;
-		options.base = github_1.payload.pull_request.base.ref;
-	} else if (github_1.eventName === "push") {
-		options.commit = github_1.payload.after;
-		options.head = github_1.ref;
-	}
+	// let reports: string[] = core.getInput("reports-array")
 
-	const lcov = await parse$2(raw);
-	const baselcov = baseRaw && await parse$2(baseRaw);
-	const body = diff(lcov, baselcov, options);
+	// reports = ["jest.common.json", "jest.web.json", "jest.pixel.json"]
 
-	if (github_1.eventName === "pull_request") {
-		await new github_2(token).issues.createComment({
-			repo: github_1.repo.repo,
-			owner: github_1.repo.owner,
-			issue_number: github_1.payload.pull_request.number,
-			body: diff(lcov, baselcov, options),
-		});
-	} else if (github_1.eventName === "push") {
-		await new github_2(token).repos.createCommitComment({
-			repo: github_1.repo.repo,
-			owner: github_1.repo.owner,
-			commit_sha: options.commit,
-			body: diff(lcov, baselcov, options),
-		});
+	// console.debug(reports, "reports ...")
+	for (i in lcovFiles) {
+		const lcovFile = lcovFiles[i];
+		const baseFile = baseFiles[i];
+
+		const file0 = path.join(CWD, lcovFile);
+		const file1 = path.join(CWD, baseFile);
+		console.log(file0, "file0");
+
+		const raw = await fs.promises.readFile(file0, "utf-8").catch((err) => null);
+		if (!raw) {
+			console.log(`No coverage report found at '${file0}', exiting...`);
+			return
+		}
+
+		const baseRaw =
+			baseFile && (await fs.promises.readFile(file1, "utf-8").catch((err) => null));
+		if (baseFile && !baseRaw) {
+			console.log(`No coverage report found at '${file1}', ignoring...`);
+		}
+
+		const options = {
+			repository: github_1.payload.repository.full_name,
+			prefix: `${process.env.GITHUB_WORKSPACE}/`,
+		};
+
+		if (github_1.eventName === "pull_request") {
+			options.commit = github_1.payload.pull_request.head.sha;
+			options.head = github_1.payload.pull_request.head.ref;
+			options.base = github_1.payload.pull_request.base.ref;
+		} else if (github_1.eventName === "push") {
+			options.commit = github_1.payload.after;
+			options.head = github_1.ref;
+		}
+
+		const lcov = await parse$2(raw);
+		const baselcov = baseRaw && (await parse$2(baseRaw));
+		const body = diff(lcov, baselcov, options);
+
+		if (github_1.eventName === "pull_request") {
+			await new github_2(token).issues.createComment({
+				repo: github_1.repo.repo,
+				owner: github_1.repo.owner,
+				issue_number: github_1.payload.pull_request.number,
+				body: diff(lcov, baselcov, options),
+			});
+		} else if (github_1.eventName === "push") {
+			await new github_2(token).repos.createCommitComment({
+				repo: github_1.repo.repo,
+				owner: github_1.repo.owner,
+				commit_sha: options.commit,
+				body: diff(lcov, baselcov, options),
+			});
+		}
 	}
 }
 
-main$1().catch(function(err) {
+main$1().catch(function (err) {
 	console.log(err);
 	core$1.setFailed(err.message);
 });

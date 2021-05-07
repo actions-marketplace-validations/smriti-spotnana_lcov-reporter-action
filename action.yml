@@ -8,11 +8,14 @@ inputs:
   github-token:
     description: Github token
     required: true
-  lcov-file:
+  reports-array:
     description: The location of the lcov.info file
     required: false
-  lcov-base:
+  base-reports-array:
     description: The location of the lcov file for the base branch
+    required: false
+  working-directory:
+    description: Sub-directory to get reports from
     required: false
 runs:
   using: node12
