@@ -22937,35 +22937,38 @@ async function main$1() {
 	const lcovFiles = core$1
 		.getInput("reports-array")
 		.split(" ")
-		.filter((x) => x !== "");
+		.filter(x => x !== "");
 
 	// we shud not need to get from user
 	const baseFiles = core$1
 		.getInput("base-reports-array")
 		.split(" ")
-		.filter((x) => x !== "");
+		.filter(x => x !== "");
 
+	console.debug(lcovFiles, baseFiles, "lcov files and base files");
 	// let reports: string[] = core.getInput("reports-array")
 
 	// reports = ["jest.common.json", "jest.web.json", "jest.pixel.json"]
 
 	// console.debug(reports, "reports ...")
-	for (i in lcovFiles) {
+	for (let i in lcovFiles) {
 		const lcovFile = lcovFiles[i];
 		const baseFile = baseFiles[i];
+		console.debug(lcovFile, "lcovFile ...");
+		console.debug(baseFile, "baseFile ...");
 
 		const file0 = path.join(CWD, lcovFile);
 		const file1 = path.join(CWD, baseFile);
 		console.log(file0, "file0");
 
-		const raw = await fs.promises.readFile(file0, "utf-8").catch((err) => null);
+		const raw = await fs.promises.readFile(file0, "utf-8").catch(err => null);
 		if (!raw) {
 			console.log(`No coverage report found at '${file0}', exiting...`);
 			return
 		}
 
 		const baseRaw =
-			baseFile && (await fs.promises.readFile(file1, "utf-8").catch((err) => null));
+			baseFile && (await fs.promises.readFile(file1, "utf-8").catch(err => null));
 		if (baseFile && !baseRaw) {
 			console.log(`No coverage report found at '${file1}', ignoring...`);
 		}
@@ -23006,7 +23009,7 @@ async function main$1() {
 	}
 }
 
-main$1().catch(function (err) {
+main$1().catch(function(err) {
 	console.log(err);
 	core$1.setFailed(err.message);
 });
